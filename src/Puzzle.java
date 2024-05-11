@@ -3,9 +3,9 @@ import java.util.Random;
 
 public class Puzzle {
     int GIVEN_NUMBERS;
+    private boolean possibleSolution = false;
 
-
-    private int[][] board = {
+    private final int[][] board = {
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
@@ -21,7 +21,10 @@ public class Puzzle {
 
     public Puzzle(int numbers) {
         this.GIVEN_NUMBERS = numbers;
+
         generate();
+
+
         printBoard(board);
         System.out.println("Unplaced Tiles = " + countZeros(board));
         System.out.println("Preplaced tiles = " + (81-countZeros(board)));

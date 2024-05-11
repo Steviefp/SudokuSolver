@@ -2,9 +2,11 @@ public class Solver extends Puzzle{
 
     int[][] solveBoard;
 
+
     public Solver(int[][] b){
         this.solveBoard = b;
         solve();
+
         printBoard(solveBoard);
     }
 
