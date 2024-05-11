@@ -2,10 +2,10 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Puzzle {
-    final int GIVEN_NUMBERS;
+    int GIVEN_NUMBERS;
 
 
-    int[][] board = {
+    private int[][] board = {
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
@@ -22,21 +22,24 @@ public class Puzzle {
     public Puzzle(int numbers) {
         this.GIVEN_NUMBERS = numbers;
         generate();
-        printBoard();
-        System.out.println("countZeros() = " + countZeros());
-        System.out.println("Preplaced tiles = " + (81-countZeros()));
-        int[] test = getSection(0,0);
-        for(int i : test){
-            System.out.print("i = " + i + " ");
-        }
+        printBoard(board);
+        System.out.println("Unplaced Tiles = " + countZeros(board));
+        System.out.println("Preplaced tiles = " + (81-countZeros(board)));
+    }
 
+    public Puzzle(){
+        //printBoard(board);
+    }
+
+    public int[][] getBoard(){
+        return board;
     }
 
     // prints the board formatted
-    public void printBoard(){
+    public void printBoard(int[][] b){
         int counter = 0;
         int counterCol = 0;
-        for (int[] rows : board) {
+        for (int[] rows : b) {
             for (int numbers : rows) {
                 if(counter == 3){
                     counter = 0;
@@ -59,15 +62,14 @@ public class Puzzle {
 
     // returns true if the number is allowed to be placed
     // returns false if number is not allowed to be placed
-    private boolean checkBoundary(int x, int y, int number){
-        int[] row = getRow(x);
-        int[] col = getCol(y);
-        int[] section = getSection(x,y);
+    protected boolean checkBoundary(int x, int y, int number, int[][] b, boolean solver){
+        int[] row = getRow(x, b);
+        int[] col = getCol(y, b);
+        int[] section = getSection(x,y, b);
 
-        if(board[x][y] != 0){
+        if(b[x][y] != 0 && !solver){
             return false;
         }
-
         else if(Arrays.stream(row).anyMatch(q->q == number)){
             return false;
         }
@@ -77,12 +79,10 @@ public class Puzzle {
         else if(Arrays.stream(section).anyMatch(q->q == number)){
             return false;
         }
-
-
         return true;
     }
 
-    private int[] getSection(int x, int y){
+    protected int[] getSection(int x, int y, int[][] b){
         int[] section = new int[9];
         int counter = 0;
         int setX = -1,setY = -1;
@@ -102,7 +102,7 @@ public class Puzzle {
 
         for (int i = setX; i < setX+3; i++) {
             for (int j = setY; j < setY+3; j++) {
-                section[counter] = board[i][j];
+                section[counter] = b[i][j];
                 counter++;
             }
         }
@@ -110,9 +110,9 @@ public class Puzzle {
         return section;
     }
 
-    private int countZeros(){
+    protected int countZeros(int[][] b){
         int counter = 0;
-        for(int[] i : board){
+        for(int[] i : b){
             for(int j: i){
                 if(j == 0){
                     counter++;
@@ -122,15 +122,15 @@ public class Puzzle {
         return counter;
     }
 
-    private int[] getRow(int x){
-        return board[x];
+    protected int[] getRow(int x, int[][] b){
+        return b[x];
     }
 
-    private int[] getCol(int y){
+    protected int[] getCol(int y, int[][] b){
         int[] col = new int[9];
 
-        for (int i = 0; i < board.length; i++){
-            col[i] = board[i][y];
+        for (int i = 0; i < b.length; i++){
+            col[i] = b[i][y];
         }
 
         return col;
@@ -147,7 +147,7 @@ public class Puzzle {
             randNumber = rand.nextInt(1, 9);
             randBoardX = rand.nextInt(8);
             randBoardY = rand.nextInt(8);
-            check = checkBoundary(randBoardX, randBoardY, randNumber);
+            check = checkBoundary(randBoardX, randBoardY, randNumber, board, false);
 
             if(check){
                 board[randBoardX][randBoardY] = randNumber;
