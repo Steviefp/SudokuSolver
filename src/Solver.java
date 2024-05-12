@@ -1,6 +1,9 @@
 public class Solver extends Puzzle{
 
+
+
     int[][] solveBoard;
+
 
 
     public Solver(int[][] b){

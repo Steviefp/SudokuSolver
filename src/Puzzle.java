@@ -3,7 +3,6 @@ import java.util.Random;
 
 public class Puzzle {
     int GIVEN_NUMBERS;
-    private boolean possibleSolution = false;
 
     private final int[][] board = {
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
@@ -19,15 +18,52 @@ public class Puzzle {
             {0, 0, 0,   0, 0, 0,    0, 0, 0},
     };
 
+    public void resetBoard(int numbers){
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                board[i][j] = 0;
+            }
+
+        }
+        GIVEN_NUMBERS = numbers;
+    }
+
     public Puzzle(int numbers) {
         this.GIVEN_NUMBERS = numbers;
+        boolean solvable;
 
         generate();
 
+        solvable = checkValidPuzzle();
+        while(!solvable){
+            resetBoard(numbers);
+            generate();
+            solvable = checkValidPuzzle();
 
+        }
         printBoard(board);
         System.out.println("Unplaced Tiles = " + countZeros(board));
         System.out.println("Preplaced tiles = " + (81-countZeros(board)));
+
+
+
+
+    }
+
+    private int[][] copyBoard(){
+        int[][] copiedBoard = new int[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            copiedBoard[i] = new int[board[i].length];
+            System.arraycopy(board[i], 0, copiedBoard[i], 0, board[i].length);
+        }
+        return copiedBoard;
+    }
+
+    private boolean checkValidPuzzle(){
+        int[][] copiedBoard = copyBoard();
+
+        Solver s = new Solver(copiedBoard);
+        return s.countZeros(s.solveBoard) == 0;
     }
 
     public Puzzle(){
@@ -147,9 +183,9 @@ public class Puzzle {
         boolean check;
 
         while (numbersLeft> 0) {
-            randNumber = rand.nextInt(1, 9);
-            randBoardX = rand.nextInt(8);
-            randBoardY = rand.nextInt(8);
+            randNumber = rand.nextInt(9) + 1;
+            randBoardX = rand.nextInt(9);
+            randBoardY = rand.nextInt(9);
             check = checkBoundary(randBoardX, randBoardY, randNumber, board, false);
 
             if(check){
